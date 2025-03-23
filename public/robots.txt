@@ -12,8 +12,6 @@ Allow: /
 
 User-agent: *
 Allow: /
-<<<<<<< HEAD
-=======
 Sitemap: https://teupaiaqueleausente.com/sitemap.xml
 
 Disallow: /admin/
@@ -36,4 +34,3 @@ Disallow: /lixo/
 Disallow: /lixo/*
 Disallow: /404
 Disallow: /404/
->>>>>>> 6c6de67a40eba9778a1efbb3bde2900661421378

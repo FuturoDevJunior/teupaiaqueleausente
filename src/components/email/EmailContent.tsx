@@ -1,11 +1,11 @@
+import {
+  Copy,
+  ExternalLink,
+  Trash2,
+} from 'lucide-react';
+import { toast } from 'sonner';
 
-import { Button } from "@/components/ui/button";
-<<<<<<< HEAD
-import { Copy, Trash2 } from "lucide-react";
-=======
-import { Copy, ExternalLink, Trash2 } from "lucide-react";
->>>>>>> 6c6de67a40eba9778a1efbb3bde2900661421378
-import { toast } from "sonner";
+import { Button } from '@/components/ui/button';
 
 interface EmailContentProps {
   content: string;
@@ -49,8 +49,6 @@ const EmailContent = ({ content, from, onDelete }: EmailContentProps) => {
           <span className="group-hover:underline relative z-10">Copiar</span>
         </Button>
         
-<<<<<<< HEAD
-=======
         <Button
           variant="outline"
           size="sm"
@@ -62,7 +60,6 @@ const EmailContent = ({ content, from, onDelete }: EmailContentProps) => {
           <span className="group-hover:underline relative z-10">Responder</span>
         </Button>
         
->>>>>>> 6c6de67a40eba9778a1efbb3bde2900661421378
         <Button 
           variant="destructive" 
           size="sm"
