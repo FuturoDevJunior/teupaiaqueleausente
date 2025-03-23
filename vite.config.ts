@@ -6,6 +6,7 @@ import { componentTagger } from "lovable-tagger";
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
   server: {
+<<<<<<< HEAD
     host: "localhost", // Restrict to localhost only
     port: 8080,
     cors: false, // Disable CORS in development
@@ -24,6 +25,10 @@ export default defineConfig(({ mode }) => ({
       'Referrer-Policy': 'strict-origin-when-cross-origin',
       'Permissions-Policy': 'camera=(), microphone=(), geolocation=(), interest-cohort=()'
     },
+=======
+    host: "::",
+    port: 8080,
+>>>>>>> 6c6de67a40eba9778a1efbb3bde2900661421378
   },
   plugins: [
     react(),
@@ -35,6 +40,7 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+<<<<<<< HEAD
   build: {
     // Improve production build security
     sourcemap: false,
@@ -63,4 +69,6 @@ export default defineConfig(({ mode }) => ({
     // Define production environment variables
     'process.env.NODE_ENV': JSON.stringify(mode),
   },
+=======
+>>>>>>> 6c6de67a40eba9778a1efbb3bde2900661421378
 }));

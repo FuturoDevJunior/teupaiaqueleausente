@@ -22,7 +22,11 @@
         },
         {
           "key": "Content-Security-Policy",
+<<<<<<< HEAD
           "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://media1.giphy.com; font-src 'self'; connect-src 'self' https://*.supabase.co; frame-ancestors 'none'; form-action 'self'; upgrade-insecure-requests;"
+=======
+          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://media1.giphy.com; font-src 'self'; connect-src 'self' https://*.supabase.co;"
+>>>>>>> 6c6de67a40eba9778a1efbb3bde2900661421378
         },
         {
           "key": "Referrer-Policy",
@@ -30,6 +34,7 @@
         },
         {
           "key": "Permissions-Policy",
+<<<<<<< HEAD
           "value": "camera=(), microphone=(), geolocation=(), interest-cohort=()"
         },
         {
@@ -57,4 +62,11 @@
     "VITE_SUPABASE_URL": "@supabase_url",
     "VITE_SUPABASE_ANON_KEY": "@supabase_anon_key"
   }
+=======
+          "value": "camera=(), microphone=(), geolocation=()"
+        }
+      ]
+    }
+  ]
+>>>>>>> 6c6de67a40eba9778a1efbb3bde2900661421378
 }

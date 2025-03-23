@@ -83,3 +83,8 @@ Contribuições são bem-vindas! Sinta-se à vontade para enviar um Pull Request
 ## 📧 Contato
 
 Gabriel Ferreira - [@DevFerreiraG](https://github.com/DevFerreiraG)
+<<<<<<< HEAD
+=======
+# teupaiaqueleausente
+# teupaiaqueleausente
+>>>>>>> 6c6de67a40eba9778a1efbb3bde2900661421378

@@ -23,6 +23,7 @@ jobs:
     - name: Install dependencies
       run: npm ci
       
+<<<<<<< HEAD
     - name: Update browserslist DB
       run: npx update-browserslist-db@latest
       
@@ -30,19 +31,25 @@ jobs:
       run: npm audit --production --audit-level=moderate
       continue-on-error: true
       
+=======
+>>>>>>> 6c6de67a40eba9778a1efbb3bde2900661421378
     - name: Lint
       run: npm run lint || true
       
     - name: Build project
       run: npm run build
+<<<<<<< HEAD
       env:
         NODE_ENV: production
         VITE_SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
         VITE_SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+=======
+>>>>>>> 6c6de67a40eba9778a1efbb3bde2900661421378
       
     - name: Run tests
       run: npm test || true
     
+<<<<<<< HEAD
     - name: Run security scanner
       uses: aquasecurity/trivy-action@master
       with:
@@ -52,6 +59,8 @@ jobs:
         format: 'table'
       continue-on-error: true
       
+=======
+>>>>>>> 6c6de67a40eba9778a1efbb3bde2900661421378
     - name: Cache build output
       uses: actions/cache@v3
       with:
@@ -63,7 +72,11 @@ jobs:
           ${{ runner.os }}-build-
     
     - name: Deploy to Vercel (only on main branch)
+<<<<<<< HEAD
       if: github.ref == 'refs/heads/main' && github.repository == 'FuturoDevJunior/teupaiaqueleausente'
+=======
+      if: github.ref == 'refs/heads/main'
+>>>>>>> 6c6de67a40eba9778a1efbb3bde2900661421378
       uses: amondnet/vercel-action@v20
       with:
         vercel-token: ${{ secrets.VERCEL_TOKEN }}

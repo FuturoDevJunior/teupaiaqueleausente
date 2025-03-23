@@ -1,6 +1,10 @@
 
 import { Button } from "@/components/ui/button";
+<<<<<<< HEAD
 import { Copy, Trash2 } from "lucide-react";
+=======
+import { Copy, ExternalLink, Trash2 } from "lucide-react";
+>>>>>>> 6c6de67a40eba9778a1efbb3bde2900661421378
 import { toast } from "sonner";
 
 interface EmailContentProps {
@@ -45,6 +49,20 @@ const EmailContent = ({ content, from, onDelete }: EmailContentProps) => {
           <span className="group-hover:underline relative z-10">Copiar</span>
         </Button>
         
+<<<<<<< HEAD
+=======
+        <Button
+          variant="outline"
+          size="sm"
+          className="group relative overflow-hidden"
+          onClick={() => window.open(`mailto:${from.split('<')[1]?.replace('>', '') || ''}`, '_blank')}
+        >
+          <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+          <ExternalLink className="h-4 w-4 mr-2 group-hover:scale-110 transition-transform" />
+          <span className="group-hover:underline relative z-10">Responder</span>
+        </Button>
+        
+>>>>>>> 6c6de67a40eba9778a1efbb3bde2900661421378
         <Button 
           variant="destructive" 
           size="sm"

@@ -1,6 +1,7 @@
 
 # Deployment Instructions
 
+<<<<<<< HEAD
 ## Security Considerations
 
 ### Development Vulnerabilities Mitigation
@@ -38,6 +39,8 @@ To set up the repository:
    - `SUPABASE_URL`: Your Supabase project URL
    - `SUPABASE_ANON_KEY`: Your Supabase public anon key
 
+=======
+>>>>>>> 6c6de67a40eba9778a1efbb3bde2900661421378
 ## Project Configuration
 
 ### .gitignore
@@ -88,6 +91,7 @@ pnpm-debug.log*
 ```
 
 ### Vercel Configuration
+<<<<<<< HEAD
 A `vercel.json` file is included in the project with strict security headers:
 
 - Content-Security-Policy with appropriate directives
@@ -117,12 +121,93 @@ The `.github/workflows/main.yml` file includes:
 3. **Environment Variables**: Store sensitive information in environment variables
 4. **HTTPS**: Ensure all production traffic uses HTTPS (enforced by Strict-Transport-Security)
 5. **Content Security Policy**: CSP headers are configured to limit resource loading to trusted sources
+=======
+Create a `vercel.json` file in your project root with the following settings:
+
+```json
+{
+  "framework": "vite",
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "installCommand": "npm install",
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-XSS-Protection",
+          "value": "1; mode=block"
+        },
+        {
+          "key": "Content-Security-Policy",
+          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://*.supabase.co;"
+        }
+      ]
+    }
+  ]
+}
+```
+
+## GitHub CI/CD Workflow
+
+Create a file `.github/workflows/main.yml` with the following content:
+
+```yaml
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Build project
+      run: npm run build
+      
+    - name: Run tests
+      run: npm test || true
+    
+    - name: Deploy to Vercel (only on main branch)
+      if: github.ref == 'refs/heads/main'
+      uses: amondnet/vercel-action@v20
+      with:
+        vercel-token: ${{ secrets.VERCEL_TOKEN }}
+        vercel-org-id: ${{ secrets.ORG_ID }}
+        vercel-project-id: ${{ secrets.PROJECT_ID }}
+        vercel-args: '--prod'
+```
+>>>>>>> 6c6de67a40eba9778a1efbb3bde2900661421378
 
 ## Deployment Steps
 
 1. **Setup Supabase Project**:
    - Create a new Supabase project
    - Run the migration and seed scripts found in the `supabase` folder
+<<<<<<< HEAD
    - Set up the environment variables for your Supabase connection in Vercel
 
 2. **Deploy to Vercel**:
@@ -131,10 +216,22 @@ The `.github/workflows/main.yml` file includes:
      - `VITE_SUPABASE_URL` - Your Supabase project URL
      - `VITE_SUPABASE_ANON_KEY` - Your Supabase public anon key
    - The build command and output directory are already configured in vercel.json
+=======
+   - Set up the environment variables for your Supabase connection
+
+2. **Deploy to Vercel**:
+   - Connect your GitHub repository to Vercel
+   - Configure the following environment variables:
+     - `VITE_SUPABASE_URL` - Your Supabase project URL
+     - `VITE_SUPABASE_ANON_KEY` - Your Supabase public anon key
+   - Set the build command to `npm run build`
+   - Set the output directory to `dist`
+>>>>>>> 6c6de67a40eba9778a1efbb3bde2900661421378
 
 3. **Custom Domain (Optional)**:
    - Add a custom domain through Vercel's dashboard
    - Configure the necessary DNS records with your domain provider
+<<<<<<< HEAD
 
 ## Automatic Deployment
 
@@ -142,3 +239,5 @@ With the GitHub Actions workflow configured, any push to the main branch will tr
 1. Build and testing
 2. Security scanning
 3. Automatic deployment to Vercel
+=======
+>>>>>>> 6c6de67a40eba9778a1efbb3bde2900661421378

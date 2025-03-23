@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Dependencies
 node_modules/
 /.pnp
@@ -27,6 +28,8 @@ junit.xml
 .env.production.local
 *.local
 
+=======
+>>>>>>> 6c6de67a40eba9778a1efbb3bde2900661421378
 # Logs
 logs
 *.log
@@ -36,6 +39,7 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+<<<<<<< HEAD
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
@@ -43,11 +47,24 @@ lerna-debug.log*
 !.vscode/tasks.json
 !.vscode/launch.json
 .idea/
+=======
+node_modules
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+>>>>>>> 6c6de67a40eba9778a1efbb3bde2900661421378
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+<<<<<<< HEAD
 *.sublime-workspace
 *.sublime-project
 
@@ -108,3 +125,5 @@ assets/temp/
 # Reports
 reports/
 test-results/
+=======
+>>>>>>> 6c6de67a40eba9778a1efbb3bde2900661421378
