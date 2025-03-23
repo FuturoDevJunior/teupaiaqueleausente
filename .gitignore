@@ -1,0 +1,110 @@
+# Dependencies
+node_modules/
+/.pnp
+.pnp.js
+yarn.lock
+package-lock.json
+
+# Testing
+/coverage
+.nyc_output
+junit.xml
+
+# Production & Build
+/build
+/dist
+/dist-ssr
+/.next
+/.nuxt
+/.svelte-kit
+/storybook-static
+
+# Environment Variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.local
+
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+*.sublime-workspace
+*.sublime-project
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Cache and Temporary files
+.cache/
+.temp/
+.tmp/
+*.tmp
+*.temp
+.eslintcache
+.stylelintcache
+tsconfig.tsbuildinfo
+
+# Development tools
+.vercel
+.netlify
+.webpack/
+.turbo
+.husky/_
+
+# Debug
+.debug/
+*.debug
+
+# Cypress
+cypress/videos/
+cypress/screenshots/
+.cypress-cache/
+
+# Docker
+.docker/
+docker-compose.override.yml
+
+# CDN & Assets
+public/uploads/
+public/temp/
+assets/temp/
+
+# Database
+*.sqlite
+*.sqlite3
+*.db
+
+# Compiled output
+*.min.js
+*.min.css
+*.map
+
+# Reports
+reports/
+test-results/
