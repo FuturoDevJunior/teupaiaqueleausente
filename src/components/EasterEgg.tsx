@@ -1,6 +1,6 @@
+import React, { useState } from 'react';
 
-import { useState } from "react";
-import { motion } from "framer-motion";
+import { motion } from 'framer-motion';
 
 export default function EasterEgg() {
   const [clicked, setClicked] = useState(0);

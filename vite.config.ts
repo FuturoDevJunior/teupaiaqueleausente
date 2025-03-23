@@ -43,17 +43,54 @@ export default defineConfig(({ mode }) => ({
         drop_debugger: true,
       },
     },
+    // Aumentar o limite de aviso para chunks grandes
+    chunkSizeWarningLimit: 800,
     rollupOptions: {
       output: {
-        manualChunks: {
-          vendor: ['react', 'react-dom', 'react-router-dom'],
-          ui: [
-            '@radix-ui/react-accordion',
-            '@radix-ui/react-alert-dialog',
-            '@radix-ui/react-aspect-ratio',
-            // Other UI dependencies can be listed here
-          ],
-        },
+        manualChunks: (id) => {
+          // Agrupar node_modules por pacotes principais
+          if (id.includes('node_modules')) {
+            if (id.includes('react') || 
+                id.includes('react-dom') || 
+                id.includes('react-router')) {
+              return 'vendor-react';
+            }
+            
+            if (id.includes('@radix-ui') || id.includes('cmdk') || id.includes('vaul')) {
+              return 'vendor-ui';
+            }
+            
+            if (id.includes('framer-motion') || id.includes('motion')) {
+              return 'vendor-animations';
+            }
+            
+            if (id.includes('recharts') || id.includes('d3') || id.includes('victory')) {
+              return 'vendor-charts';
+            }
+            
+            if (id.includes('date-fns') || id.includes('crypto-js') || id.includes('zod')) {
+              return 'vendor-utils';
+            }
+            
+            return 'vendor'; // todos os outros node_modules
+          }
+          
+          // Agrupar código da aplicação por características
+          if (id.includes('/components/')) {
+            if (id.includes('/ui/')) {
+              return 'ui-components';
+            }
+            return 'components';
+          }
+          
+          if (id.includes('/lib/')) {
+            return 'lib';
+          }
+          
+          if (id.includes('/pages/')) {
+            return 'pages';
+          }
+        }
       },
     },
   },

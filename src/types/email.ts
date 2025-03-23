@@ -9,7 +9,10 @@ export interface Email {
 }
 
 export interface EmailBoxProps {
-  email: Email;
-  onDelete: () => void;
-  onRead: () => void;
+  email: string;
+  emails: Email[];
+  onRefresh: () => void;
+  onNewEmail: () => void;
+  onDeleteEmail: (id: string) => void;
+  onReadEmail: (id: string) => void;
 } 

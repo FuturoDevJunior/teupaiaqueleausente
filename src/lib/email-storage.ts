@@ -1,6 +1,6 @@
+import { supabase } from '@/integrations/supabase/client';
 
-import { encrypt } from "./crypto-utils";
-import { supabase } from "@/integrations/supabase/client";
+import { encrypt } from './crypto-utils';
 
 // Chaves para armazenamento local
 export const SESSION_STORAGE_KEY = "teupaiausente_session_id";
@@ -13,9 +13,14 @@ export const getSessionId = (): string => {
   let sessionId = sessionStorage.getItem(SESSION_STORAGE_KEY);
   
   if (!sessionId) {
-    // Importação dinâmica para evitar problemas de referências circulares
-    const { generateSessionId } = require("./crypto-utils");
-    sessionId = generateSessionId();
+    // Use dynamic import instead of require
+    import("./crypto-utils").then(module => {
+      sessionId = module.generateSessionId();
+      sessionStorage.setItem(SESSION_STORAGE_KEY, sessionId);
+    });
+    
+    // Since the import is async, create a temporary sessionId for immediate use
+    sessionId = crypto.randomUUID();
     sessionStorage.setItem(SESSION_STORAGE_KEY, sessionId);
   }
   

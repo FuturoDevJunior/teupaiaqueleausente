@@ -1,7 +1,6 @@
-
-import { generateUniqueId } from "./email-utils";
-import { generateMD5Hash } from "./crypto-utils";
-import { Email } from "./email-service";
+import { generateMD5Hash } from './crypto-utils';
+import { Email } from './email-service';
+import { generateUniqueId } from './email-utils';
 
 // Personagens de Family Guy para os emails fictícios
 const familyGuyCharacters = [
@@ -55,25 +54,48 @@ const paternalContent = [
   "<p>E aí, filhão!</p><p>Como vai a vida? A minha está ótima! Tenho uma nova família agora, dois filhos e um cachorro. Não se preocupe, eu também não pago pensão para eles.</p><p>Só queria saber se você joga futebol. Meu novo filho é péssimo nisso.</p><p>Um abraço do seu pai que te ama (quando lembra que você existe)</p>"
 ];
 
+// Cache de emails gerados para evitar duplicações
+const emailCache: Record<string, Email[]> = {};
+
 /**
  * Gera emails fictícios para demonstração
+ * 
+ * Modificado para ser mais determinístico e usar cache, evitando gerar emails
+ * diferentes a cada vez que é chamada para o mesmo endereço
  */
 export const generateMockEmails = (email: string): Email[] => {
+  // Se já temos emails em cache para este endereço, retornamos eles
+  if (emailCache[email]) {
+    return emailCache[email];
+  }
+  
   const emailHash = generateMD5Hash(email).substring(0, 8);
-  const shouldGenerateMockEmails = parseInt(emailHash, 16) % 100 < 70; // 70% chance
+  const numeroDeterministico = parseInt(emailHash, 16);
+  
+  // Determinar se deve gerar emails (baseado no hash do email para ser consistente)
+  const shouldGenerateMockEmails = numeroDeterministico % 100 < 70; // 70% chance
   
   if (!shouldGenerateMockEmails) {
+    emailCache[email] = [];
     return [];
   }
   
-  const numEmails = Math.floor(Math.random() * 3) + 1; // 1 a 3 emails
+  // Usar o hash para determinar a quantidade de emails (1-3) de forma consistente
+  const numEmails = (Math.floor(numeroDeterministico / 100) % 3) + 1;
   const mockEmails: Email[] = [];
 
   for (let i = 0; i < numEmails; i++) {
-    const character = familyGuyCharacters[Math.floor(Math.random() * familyGuyCharacters.length)];
-    const subject = paternalSubjects[Math.floor(Math.random() * paternalSubjects.length)];
-    const content = paternalContent[Math.floor(Math.random() * paternalContent.length)];
-    const minutesAgo = Math.floor(Math.random() * 19) + 1; // 1 a 19 minutos atrás
+    // Usar índices determinísticos baseados no hash do email
+    const characterIndex = (numeroDeterministico + i * 31) % familyGuyCharacters.length;
+    const subjectIndex = (numeroDeterministico + i * 17) % paternalSubjects.length;
+    const contentIndex = (numeroDeterministico + i * 13) % paternalContent.length;
+    
+    const character = familyGuyCharacters[characterIndex];
+    const subject = paternalSubjects[subjectIndex];
+    const content = paternalContent[contentIndex];
+    
+    // Gerar timestamp baseado no hash para ser consistente
+    const minutesAgo = ((numeroDeterministico + i * 7) % 19) + 1; // 1 a 19 minutos atrás
     
     mockEmails.push({
       id: generateUniqueId(),
@@ -86,5 +108,8 @@ export const generateMockEmails = (email: string): Email[] => {
     });
   }
 
+  // Armazenar os emails gerados em cache
+  emailCache[email] = mockEmails;
+  
   return mockEmails;
 };

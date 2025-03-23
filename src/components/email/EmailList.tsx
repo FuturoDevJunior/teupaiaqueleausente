@@ -1,10 +1,22 @@
+import {
+  AnimatePresence,
+  motion,
+} from 'framer-motion';
+import {
+  Info,
+  Mail,
+} from 'lucide-react';
 
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { motion, AnimatePresence } from "framer-motion";
-import { Mail, RefreshCw, MailCheck } from "lucide-react";
-import EmailBox from "./EmailBox";
-import { Email } from "@/lib/email-service";
+import { Button } from '@/components/ui/button';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
+import { Email } from '@/lib/email-service';
+
+import EmailBox from './EmailBox';
 
 interface EmailListProps {
   messages: Email[];
@@ -27,19 +39,48 @@ const EmailList = ({
         <div className="flex items-center">
           <h3 className="font-semibold">Caixa de entrada</h3>
           <div className="ml-2 flex items-center text-xs text-muted-foreground">
-            <MailCheck className="h-3 w-3 mr-1" />
+            <Mail className="h-3 w-3 mr-1" />
             <span>{messages.length} mensagens</span>
           </div>
+          
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div className="ml-1 cursor-help">
+                  <Info className="h-3 w-3 text-muted-foreground/70" />
+                </div>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p className="text-xs max-w-52">
+                  Limite de 10 atualizações por minuto para evitar sobrecarga.
+                </p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
         <Button
           variant="outline"
           size="sm"
-          className="group hover:bg-indigo-50 hover:border-indigo-200 dark:hover:bg-indigo-900/20 dark:hover:border-indigo-700 shadow-sm"
+          className="group hover:bg-indigo-50 hover:border-indigo-200 dark:hover:bg-indigo-900/20 dark:hover:border-indigo-700 shadow-sm transition-all duration-300"
           onClick={onCheckEmails}
           disabled={checkingEmail}
         >
-          <RefreshCw className={`h-4 w-4 mr-1 ${checkingEmail ? "animate-spin" : ""} group-hover:scale-110 transition-transform`} />
-          Atualizar
+          <svg 
+            className={`h-4 w-4 mr-1 ${checkingEmail ? "animate-spin text-primary" : ""} group-hover:scale-110 transition-transform`}
+            xmlns="http://www.w3.org/2000/svg" 
+            width="24" 
+            height="24" 
+            viewBox="0 0 24 24" 
+            fill="none" 
+            stroke="currentColor" 
+            strokeWidth="2" 
+            strokeLinecap="round" 
+            strokeLinejoin="round"
+          >
+            <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8" />
+            <path d="M21 3v5h-5" />
+          </svg>
+          {checkingEmail ? "Atualizando..." : "Atualizar"}
         </Button>
       </div>
 
@@ -79,6 +120,30 @@ const EmailList = ({
               exit={{ opacity: 0 }}
               className="p-4 space-y-4 max-h-[400px] overflow-y-auto"
             >
+              {checkingEmail && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  className="bg-muted/40 rounded-md p-2 mb-2 text-center text-sm text-muted-foreground"
+                >
+                  <svg 
+                    className="h-3 w-3 animate-spin inline-block mr-1"
+                    xmlns="http://www.w3.org/2000/svg" 
+                    viewBox="0 0 24 24" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    strokeWidth="2" 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round"
+                  >
+                    <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8" />
+                    <path d="M21 3v5h-5" />
+                  </svg>
+                  <span>Verificando novos emails...</span>
+                </motion.div>
+              )}
+              
               <AnimatePresence initial={false}>
                 {messages.map((message) => (
                   <motion.div

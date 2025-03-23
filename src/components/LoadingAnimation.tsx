@@ -1,6 +1,5 @@
-
-import { motion } from "framer-motion";
-import { Mail } from "lucide-react";
+import { motion } from 'framer-motion';
+import { Mail } from 'lucide-react';
 
 export default function LoadingAnimation() {
   return (
@@ -61,7 +60,7 @@ export default function LoadingAnimation() {
         transition={{ delay: 0.5 }}
         className="text-xl font-medium bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 to-purple-600"
       >
-        EmailUrso
+        Teu Pai aquele ausente
       </motion.p>
       
       <motion.p

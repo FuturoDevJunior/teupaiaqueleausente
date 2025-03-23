@@ -26,53 +26,18 @@ import {
 } from '@/lib/email-service';
 
 // Lazy loading para componentes pesados
-// const EmailBox = lazy(() => import("@/components/EmailBox"));
+const EmailBox = lazy(() => import("@/components/EmailBox"));
 const CookieConsent = lazy(() => import("@/components/CookieConsent"));
 const EasterEgg = lazy(() => import("@/components/EasterEgg"));
-
-// Hook personalizado para gerenciar o consentimento de cookies
-function useCookieConsent() {
-  const [showConsent, setShowConsent] = useState(false);
-  
-  useEffect(() => {
-    // Verifica se já existe consentimento
-    const hasConsent = localStorage.getItem("cookie_consent") === "true";
-    
-    if (!hasConsent) {
-      // Atrasa a exibição para melhorar a experiência inicial
-      const timer = setTimeout(() => {
-        setShowConsent(true);
-      }, 2000);
-      
-      return () => clearTimeout(timer);
-    }
-  }, []);
-  
-  const acceptCookies = useCallback(() => {
-    localStorage.setItem("cookie_consent", "true");
-    setShowConsent(false);
-    // Notificação de confirmação
-    toast.success("Preferências salvas", {
-      description: "Suas preferências de privacidade foram salvas.",
-      icon: "✓",
-      duration: 3000,
-    });
-  }, []);
-  
-  return {
-    showConsent,
-    acceptCookies
-  };
-}
 
 export default function Index() {
   const [email, setEmail] = useState("");
   const [generatingEmail, setGeneratingEmail] = useState(true);
   const [messages, setMessages] = useState<EmailType[]>([]);
   const [checkingEmail, setCheckingEmail] = useState(false);
+  const [showCookieConsent, setShowCookieConsent] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
   const [loading, setLoading] = useState(false);
-  const { showConsent, acceptCookies } = useCookieConsent();
 
   // Verificar por novos emails
   const checkEmail = useCallback(async (emailToCheck = email, silent = false) => {
@@ -84,38 +49,19 @@ export default function Index() {
       const fetchedEmails = await fetchEmails(emailToCheck);
       
       if (fetchedEmails.length > 0) {
-        // Melhorar a deduplicação dos emails
+        // Filtra emails já existentes
         const newEmails = fetchedEmails.filter(newEmail => 
-          !messages.some(existing => 
-            // Comparar por ID e também por conteúdo se os IDs forem diferentes
-            existing.id === newEmail.id || 
-            (existing.from === newEmail.from && 
-             existing.subject === newEmail.subject && 
-             existing.date === newEmail.date)
-          )
+          !messages.some(existing => existing.id === newEmail.id)
         );
-        
-        // Limitar a quantidade de emails mostrados para evitar sobrecarga
-        const MAX_DISPLAYED_EMAILS = 20;
         
         if (newEmails.length > 0 && !silent) {
           toast.success(`${newEmails.length} ${newEmails.length === 1 ? 'novo email' : 'novos emails'} recebido${newEmails.length === 1 ? '' : 's'}!`, {
             description: "Confira sua caixa de entrada.",
             icon: "📩",
           });
-          
-          // Atualizar a lista de emails, mantendo dentro do limite
-          setMessages(prev => {
-            const combined = [...newEmails, ...prev];
-            return combined.slice(0, MAX_DISPLAYED_EMAILS);
-          });
-        } else if (!silent && fetchedEmails.length > 0 && newEmails.length === 0) {
-          // Se não houve emails novos, mas temos emails
-          toast.info("Nenhum email novo", {
-            description: "Todos os emails já estão na sua caixa.",
-            icon: "📭",
-          });
         }
+        
+        setMessages(prev => [...newEmails, ...prev]);
       } else if (!silent) {
         toast.info("Nenhum email novo", {
           description: "Sua caixa está vazia.",
@@ -133,6 +79,18 @@ export default function Index() {
       if (!silent) setCheckingEmail(false);
     }
   }, [email, messages]);
+
+  // Verificar consentimento de cookies no carregamento
+  useEffect(() => {
+    const hasConsent = localStorage.getItem("cookie_consent");
+    if (!hasConsent) {
+      // Atrasa a exibição para melhorar a experiência inicial
+      const timer = setTimeout(() => {
+        setShowCookieConsent(true);
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, []);
 
   // Inicializar o aplicativo e gerar email temporário
   useEffect(() => {
@@ -253,6 +211,21 @@ export default function Index() {
 
           <UseCasesSection />
 
+          {/* Lazy loading de componentes */}
+          <Suspense fallback={null}>
+            <CookieConsent
+              onAccept={() => setShowCookieConsent(false)}
+            />
+          </Suspense>
+          
+          {/* Lazy loading de componentes */}
+          <Suspense fallback={null}>
+            <CookieConsent
+              open={showCookieConsent}
+              onAccept={() => setShowCookieConsent(false)}
+            />
+          </Suspense>
+          
           {/* Easter egg: isso não faz nada útil, é apenas uma piada */}
           {email.includes("pai") && (
             <Suspense fallback={null}>
@@ -263,14 +236,6 @@ export default function Index() {
       </div>
 
       <AppFooter />
-      
-      {/* Componente de consentimento de cookies usando o hook personalizado */}
-      <Suspense fallback={null}>
-        <CookieConsent
-          open={showConsent}
-          onAccept={acceptCookies}
-        />
-      </Suspense>
     </div>
   );
 }
