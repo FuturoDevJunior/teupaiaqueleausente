@@ -1,6 +1,6 @@
 import { supabase } from '@/integrations/supabase/client';
 
-import { encrypt } from './crypto-utils';
+import { encrypt } from './utils/crypto';
 
 // Chaves para armazenamento local
 export const SESSION_STORAGE_KEY = "teupaiausente_session_id";

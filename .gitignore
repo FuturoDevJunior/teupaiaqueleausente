@@ -108,3 +108,12 @@ assets/temp/
 # Reports
 reports/
 test-results/
+
+# Supabase
+.supabase
+
+# Vercel
+.vercel
+
+# Backup files
+*.bak

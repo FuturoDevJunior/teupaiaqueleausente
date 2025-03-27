@@ -1,243 +1,290 @@
+# Deployment Guide
 
-# Deployment Instructions
+This guide provides detailed instructions for deploying the Super Email Brazil application to production environments.
 
-<<<<<<< HEAD
+## Table of Contents
+
+1. [Prerequisites](#prerequisites)
+2. [Environment Setup](#environment-setup)
+3. [Build Process](#build-process)
+4. [Deployment Options](#deployment-options)
+5. [Security Considerations](#security-considerations)
+6. [Monitoring Setup](#monitoring-setup)
+7. [Performance Optimization](#performance-optimization)
+8. [Maintenance](#maintenance)
+
+## Prerequisites
+
+- Node.js v18 or higher
+- npm or yarn
+- Supabase account
+- Production domain
+- SSL certificate
+- CI/CD platform access (e.g., GitHub Actions)
+
+## Environment Setup
+
+1. **Production Environment Variables**
+
+Create a secure production environment file with the following variables:
+
+```bash
+# Supabase Configuration
+VITE_SUPABASE_URL=your_production_supabase_url
+VITE_SUPABASE_ANON_KEY=your_production_supabase_anon_key
+
+# Rate Limiting Configuration
+VITE_RATE_LIMIT_MAX_REQUESTS=100
+VITE_RATE_LIMIT_BLOCK_DURATION=300000
+
+# Cache Configuration
+VITE_CACHE_MAX_AGE=60000
+VITE_CACHE_MAX_SIZE=10000
+
+# Security Configuration
+VITE_MAX_CONTENT_LENGTH=50000
+VITE_ALLOWED_DOMAINS=your-domain.com,other-domain.com
+VITE_ENCRYPTION_KEY=your_production_encryption_key
+
+# Monitoring Configuration
+VITE_MONITORING_ENABLED=true
+VITE_MONITORING_FLUSH_INTERVAL=30000
+VITE_ERROR_SAMPLING_RATE=0.1
+```
+
+2. **SSL/TLS Configuration**
+
+Ensure SSL/TLS is properly configured:
+- Obtain SSL certificate
+- Configure automatic renewal
+- Enable HSTS
+- Configure secure headers
+
+## Build Process
+
+1. **Production Build**
+
+```bash
+# Install dependencies
+npm ci
+
+# Build for production
+npm run build
+
+# Test production build
+npm run preview
+```
+
+2. **Build Optimization**
+
+- Enable code splitting
+- Optimize asset compression
+- Configure caching headers
+- Implement CDN integration
+
+## Deployment Options
+
+### 1. Vercel Deployment
+
+```bash
+# Install Vercel CLI
+npm i -g vercel
+
+# Deploy to Vercel
+vercel --prod
+```
+
+### 2. Docker Deployment
+
+```dockerfile
+FROM node:18-alpine as builder
+
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci
+COPY . .
+RUN npm run build
+
+FROM nginx:alpine
+COPY --from=builder /app/dist /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
+```
+
+### 3. Traditional Hosting
+
+```bash
+# Build locally
+npm run build
+
+# Upload dist folder to your hosting provider
+scp -r dist/* user@your-server:/var/www/html/
+```
+
 ## Security Considerations
 
-### Development Vulnerabilities Mitigation
-This project has addressed several security vulnerabilities:
+1. **Headers Configuration**
 
-1. **Babel RegExp Complexity Issues**: Mitigated by using SWC through Vite for development and building.
-2. **Development Server Access Control**: The development server is configured to only listen on localhost, preventing external access.
-3. **CORS Protection**: CORS is disabled in development mode to prevent cross-origin requests.
-4. **Content Security Policy**: Implemented CSP headers in both development and production environments.
-
-### Environment Setup
-
-For production deployment, ensure you set the following environment variables in your Vercel project:
-
-```
-VITE_SUPABASE_URL=<your-supabase-url>
-VITE_SUPABASE_ANON_KEY=<your-supabase-anon-key>
-NODE_ENV=production
+```nginx
+add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+add_header X-Frame-Options "SAMEORIGIN" always;
+add_header X-XSS-Protection "1; mode=block" always;
+add_header X-Content-Type-Options "nosniff" always;
+add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline';" always;
 ```
 
-## GitHub Repository Setup
+2. **Rate Limiting Configuration**
 
-The project is configured to be deployed from the GitHub repository at:
-```
-https://github.com/FuturoDevJunior/teupaiaqueleausente
-```
-
-To set up the repository:
-
-1. Push your code to this repository
-2. Add the following secrets to your GitHub repository settings:
-   - `VERCEL_TOKEN`: Your Vercel API token
-   - `ORG_ID`: Your Vercel organization ID
-   - `PROJECT_ID`: Your Vercel project ID
-   - `SUPABASE_URL`: Your Supabase project URL
-   - `SUPABASE_ANON_KEY`: Your Supabase public anon key
-
-=======
->>>>>>> 6c6de67a40eba9778a1efbb3bde2900661421378
-## Project Configuration
-
-### .gitignore
-When setting up your repository, add a `.gitignore` file with the following content:
-
-```
-# Dependencies
-node_modules
-.pnp
-.pnp.js
-
-# Build files
-dist
-build
-out
-
-# Environment variables
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-
-# Logs
-logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
-.DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
-
-# Supabase
-.supabase
-
-# Vercel
-.vercel
+```nginx
+limit_req_zone $binary_remote_addr zone=one:10m rate=10r/s;
+limit_req zone=one burst=20 nodelay;
 ```
 
-### Vercel Configuration
-<<<<<<< HEAD
-A `vercel.json` file is included in the project with strict security headers:
+3. **Firewall Rules**
 
-- Content-Security-Policy with appropriate directives
-- X-Content-Type-Options: nosniff
-- X-Frame-Options: DENY
-- X-XSS-Protection
-- Strict-Transport-Security
-- Referrer-Policy
-- Permissions-Policy
+```bash
+# Allow only necessary ports
+ufw allow 80/tcp
+ufw allow 443/tcp
+ufw enable
+```
 
-## GitHub CI/CD Workflow
+## Monitoring Setup
 
-The `.github/workflows/main.yml` file includes:
+1. **Error Tracking**
 
-- Dependency installation
-- Security audit with npm audit
-- Linting checks
-- Production build with NODE_ENV=production
-- Testing
-- Security scanning with Trivy
-- Deployment to Vercel (for main branch)
+Configure error tracking service (e.g., Sentry):
 
-## Security Best Practices
+```javascript
+Sentry.init({
+  dsn: "your-sentry-dsn",
+  environment: "production",
+  tracesSampleRate: 0.1
+});
+```
 
-1. **Regular Updates**: Periodically run `npm audit` and update dependencies
-2. **Production Builds**: Always use `NODE_ENV=production` for builds
-3. **Environment Variables**: Store sensitive information in environment variables
-4. **HTTPS**: Ensure all production traffic uses HTTPS (enforced by Strict-Transport-Security)
-5. **Content Security Policy**: CSP headers are configured to limit resource loading to trusted sources
-=======
-Create a `vercel.json` file in your project root with the following settings:
+2. **Performance Monitoring**
 
-```json
-{
-  "framework": "vite",
-  "buildCommand": "npm run build",
-  "outputDirectory": "dist",
-  "installCommand": "npm install",
-  "headers": [
-    {
-      "source": "/(.*)",
-      "headers": [
-        {
-          "key": "X-Content-Type-Options",
-          "value": "nosniff"
-        },
-        {
-          "key": "X-Frame-Options",
-          "value": "DENY"
-        },
-        {
-          "key": "X-XSS-Protection",
-          "value": "1; mode=block"
-        },
-        {
-          "key": "Content-Security-Policy",
-          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://*.supabase.co;"
-        }
-      ]
-    }
-  ]
+Configure metrics collection:
+
+```javascript
+// Configure metrics endpoint
+const metricsEndpoint = 'https://your-metrics-service.com/collect';
+
+// Configure logging
+const loggingConfig = {
+  level: 'error',
+  format: 'json'
+};
+```
+
+3. **Health Checks**
+
+Create health check endpoints:
+
+```javascript
+app.get('/health', (req, res) => {
+  res.status(200).json({
+    status: 'healthy',
+    timestamp: new Date().toISOString()
+  });
+});
+```
+
+## Performance Optimization
+
+1. **Caching Strategy**
+
+```nginx
+# Cache static assets
+location /assets/ {
+    expires 1y;
+    add_header Cache-Control "public, no-transform";
+}
+
+# Cache API responses
+location /api/ {
+    proxy_cache my_cache;
+    proxy_cache_use_stale error timeout http_500 http_502 http_503 http_504;
+    proxy_cache_valid 200 60m;
 }
 ```
 
-## GitHub CI/CD Workflow
+2. **CDN Configuration**
 
-Create a file `.github/workflows/main.yml` with the following content:
-
-```yaml
-name: CI/CD Pipeline
-
-on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
-
-jobs:
-  build:
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v3
-    
-    - name: Setup Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '18'
-        cache: 'npm'
-        
-    - name: Install dependencies
-      run: npm ci
-      
-    - name: Build project
-      run: npm run build
-      
-    - name: Run tests
-      run: npm test || true
-    
-    - name: Deploy to Vercel (only on main branch)
-      if: github.ref == 'refs/heads/main'
-      uses: amondnet/vercel-action@v20
-      with:
-        vercel-token: ${{ secrets.VERCEL_TOKEN }}
-        vercel-org-id: ${{ secrets.ORG_ID }}
-        vercel-project-id: ${{ secrets.PROJECT_ID }}
-        vercel-args: '--prod'
+```javascript
+// Configure CDN URLs
+const cdnConfig = {
+  baseUrl: 'https://your-cdn.com',
+  assets: '/assets',
+  timeout: 5000
+};
 ```
->>>>>>> 6c6de67a40eba9778a1efbb3bde2900661421378
 
-## Deployment Steps
+## Maintenance
 
-1. **Setup Supabase Project**:
-   - Create a new Supabase project
-   - Run the migration and seed scripts found in the `supabase` folder
-<<<<<<< HEAD
-   - Set up the environment variables for your Supabase connection in Vercel
+1. **Backup Strategy**
 
-2. **Deploy to Vercel**:
-   - Connect your GitHub repository to Vercel
-   - Configure the environment variables:
-     - `VITE_SUPABASE_URL` - Your Supabase project URL
-     - `VITE_SUPABASE_ANON_KEY` - Your Supabase public anon key
-   - The build command and output directory are already configured in vercel.json
-=======
-   - Set up the environment variables for your Supabase connection
+```bash
+# Backup database daily
+0 0 * * * pg_dump -U postgres -d your_database > /backups/db_$(date +%Y%m%d).sql
 
-2. **Deploy to Vercel**:
-   - Connect your GitHub repository to Vercel
-   - Configure the following environment variables:
-     - `VITE_SUPABASE_URL` - Your Supabase project URL
-     - `VITE_SUPABASE_ANON_KEY` - Your Supabase public anon key
-   - Set the build command to `npm run build`
-   - Set the output directory to `dist`
->>>>>>> 6c6de67a40eba9778a1efbb3bde2900661421378
+# Rotate backups weekly
+0 0 * * 0 find /backups/ -mtime +7 -delete
+```
 
-3. **Custom Domain (Optional)**:
-   - Add a custom domain through Vercel's dashboard
-   - Configure the necessary DNS records with your domain provider
-<<<<<<< HEAD
+2. **Update Process**
 
-## Automatic Deployment
+```bash
+# Update dependencies
+npm audit
+npm update
 
-With the GitHub Actions workflow configured, any push to the main branch will trigger:
-1. Build and testing
-2. Security scanning
-3. Automatic deployment to Vercel
-=======
->>>>>>> 6c6de67a40eba9778a1efbb3bde2900661421378
+# Test after updates
+npm run test
+npm run build
+```
+
+3. **Monitoring Alerts**
+
+Configure alerts for:
+- Error rate spikes
+- High latency
+- Memory usage
+- CPU usage
+- Disk space
+- SSL certificate expiration
+
+## Rollback Procedure
+
+1. **Quick Rollback**
+
+```bash
+# Tag releases
+git tag v1.0.0
+
+# Rollback to previous version
+git checkout v0.9.0
+npm ci
+npm run build
+```
+
+2. **Database Rollback**
+
+```sql
+-- Create restore point
+CREATE RESTORE POINT my_restore_point;
+
+-- Rollback if needed
+ROLLBACK TO RESTORE POINT my_restore_point;
+```
+
+## Support
+
+For deployment support:
+1. Check the troubleshooting guide
+2. Review logs
+3. Contact support team
+4. Open GitHub issue

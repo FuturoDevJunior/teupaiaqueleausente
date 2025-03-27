@@ -1,6 +1,6 @@
-import { generateMD5Hash } from './crypto-utils';
 import { Email } from './email-service';
 import { generateUniqueId } from './email-utils';
+import { generateMD5Hash } from './utils/crypto';
 
 // Personagens de Family Guy para os emails fictícios
 const familyGuyCharacters = [

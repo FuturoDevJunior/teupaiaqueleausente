@@ -1,11 +1,16 @@
+import { useState } from 'react';
 
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown } from "lucide-react";
-import { Card } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
-import EmailHeader from "./EmailHeader";
-import EmailContent from "./EmailContent";
+import {
+  AnimatePresence,
+  motion,
+} from 'framer-motion';
+import { ChevronDown } from 'lucide-react';
+
+import { Card } from '@/components/ui/card';
+import { cn } from '@/lib/utils';
+
+import EmailContent from './EmailContent';
+import EmailHeader from './EmailHeader';
 
 interface EmailProps {
   email: {
@@ -23,7 +28,7 @@ interface EmailProps {
 
 const EmailBox = ({ email, onDelete, onRead }: EmailProps) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [isRead, setIsRead] = useState(email.read);
+  const [isRead, setIsRead] = useState(email?.read || false);
   
   const toggleOpen = () => {
     setIsOpen(!isOpen);

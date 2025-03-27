@@ -58,7 +58,7 @@ export default function CookieConsent({ onAccept, open = true }: CookieConsentPr
                     <div className="flex flex-wrap gap-3 mt-3">
                       <Button
                         onClick={handleAccept}
-                        className="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 shadow-md"
+                        className="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 shadow-md w-full sm:w-auto"
                       >
                         Sim, concordo
                       </Button>
@@ -66,7 +66,7 @@ export default function CookieConsent({ onAccept, open = true }: CookieConsentPr
                       <Button 
                         variant="outline"
                         onClick={() => setShowDetails(!showDetails)}
-                        className="group relative overflow-hidden"
+                        className="group relative overflow-hidden w-full sm:w-auto"
                       >
                         <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 opacity-0 group-hover:opacity-100 transition-opacity" />
                         <Info className="h-4 w-4 mr-2" />

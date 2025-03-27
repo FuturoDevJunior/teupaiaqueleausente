@@ -26,7 +26,7 @@ import {
 } from '@/lib/email-service';
 
 // Lazy loading para componentes pesados
-// const EmailBox = lazy(() => import("@/components/EmailBox"));
+// const EmailContainer = lazy(() => import("@/components/email/EmailContainer"));
 const CookieConsent = lazy(() => import("@/components/CookieConsent"));
 const EasterEgg = lazy(() => import("@/components/EasterEgg"));
 
@@ -81,7 +81,18 @@ export default function Index() {
     if (!silent) setCheckingEmail(true);
     
     try {
+      // Check network connection first
+      if (!navigator.onLine) {
+        toast.error("Sem conexão com a internet", {
+          description: "Verifique sua conexão e tente novamente.",
+          id: "network-error",
+          duration: 3000,
+        });
+        return;
+      }
+      
       const fetchedEmails = await fetchEmails(emailToCheck);
+      let notificationShown = false;
       
       if (fetchedEmails.length > 0) {
         // Melhorar a deduplicação dos emails
@@ -102,6 +113,8 @@ export default function Index() {
           toast.success(`${newEmails.length} ${newEmails.length === 1 ? 'novo email' : 'novos emails'} recebido${newEmails.length === 1 ? '' : 's'}!`, {
             description: "Confira sua caixa de entrada.",
             icon: "📩",
+            id: "email-notification", // Add a unique ID to prevent duplicate toasts
+            duration: 4000,
           });
           
           // Atualizar a lista de emails, mantendo dentro do limite
@@ -109,17 +122,18 @@ export default function Index() {
             const combined = [...newEmails, ...prev];
             return combined.slice(0, MAX_DISPLAYED_EMAILS);
           });
-        } else if (!silent && fetchedEmails.length > 0 && newEmails.length === 0) {
-          // Se não houve emails novos, mas temos emails
-          toast.info("Nenhum email novo", {
-            description: "Todos os emails já estão na sua caixa.",
-            icon: "📭",
-          });
+          notificationShown = true;
         }
-      } else if (!silent) {
+      } 
+      
+      // Mostra a notificação de caixa vazia apenas se nenhuma outra notificação foi exibida
+      // e se não estiver sendo chamado logo após gerar um novo email
+      if (!silent && !notificationShown && !generatingEmail) {
         toast.info("Nenhum email novo", {
-          description: "Sua caixa está vazia.",
+          description: fetchedEmails.length === 0 ? "Sua caixa está vazia." : "Todos os emails já estão na sua caixa.",
           icon: "📭",
+          id: "email-notification", // Add a unique ID to prevent duplicate toasts
+          duration: 3000,
         });
       }
     } catch (error) {
@@ -127,12 +141,43 @@ export default function Index() {
       if (!silent) {
         toast.error("Erro ao verificar emails", {
           description: "Tente novamente em alguns instantes.",
+          id: "email-notification", // Add a unique ID to prevent duplicate toasts
         });
       }
     } finally {
       if (!silent) setCheckingEmail(false);
     }
-  }, [email, messages]);
+  }, [email, messages, generatingEmail]);
+
+  // Monitor network connection status
+  useEffect(() => {
+    const handleOnline = () => {
+      if (email) {
+        toast.success("Conexão restaurada", {
+          description: "Verificando por novos emails...",
+          id: "network-status",
+          duration: 3000,
+        });
+        checkEmail(email, false);
+      }
+    };
+    
+    const handleOffline = () => {
+      toast.error("Sem conexão com a internet", {
+        description: "Algumas funcionalidades podem não estar disponíveis.",
+        id: "network-status",
+        duration: 4000,
+      });
+    };
+    
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, [email, checkEmail]);
 
   // Inicializar o aplicativo e gerar email temporário
   useEffect(() => {
@@ -172,13 +217,16 @@ export default function Index() {
       toast.success("Novo email gerado!", {
         description: "Este email dura até você fechar a aba!",
         icon: "📬",
+        id: "email-notification", // Add a unique ID to prevent duplicate toasts
       });
       
-      await checkEmail(newEmail);
+      // Use silent mode to avoid showing another notification right after generating email
+      await checkEmail(newEmail, true);
     } catch (error) {
       console.error("Erro ao gerar email:", error);
       toast.error("Erro ao gerar email", {
         description: "Tente novamente em alguns instantes.",
+        id: "email-notification", // Add a unique ID to prevent duplicate toasts
       });
     } finally {
       setGeneratingEmail(false);
@@ -218,7 +266,7 @@ export default function Index() {
   
   return (
     <div className="flex flex-col min-h-screen bg-gradient-to-b from-background to-secondary/5 overflow-x-hidden">
-      <div className="container px-4 py-6 md:py-8 mx-auto flex-1">
+      <div className="container px-4 md:px-6 py-4 md:py-8 mx-auto flex-1">
         <AppHeader />
 
         <main className="max-w-4xl mx-auto">
@@ -226,7 +274,7 @@ export default function Index() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="bg-card rounded-xl border shadow-lg p-5 md:p-7 mb-8 relative overflow-hidden"
+            className="bg-card rounded-xl border shadow-lg p-4 md:p-7 mb-6 md:mb-8 relative overflow-hidden"
           >
             <div className="absolute -top-20 -right-20 w-40 h-40 bg-gradient-to-br from-purple-300/20 to-indigo-300/20 rounded-full blur-3xl pointer-events-none" />
             <div className="absolute -bottom-20 -left-20 w-40 h-40 bg-gradient-to-br from-pink-300/20 to-purple-300/20 rounded-full blur-3xl pointer-events-none" />

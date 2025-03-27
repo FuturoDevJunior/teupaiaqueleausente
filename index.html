@@ -2,27 +2,84 @@
 <html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>TeuPai - Email Temporário</title>
-    <meta name="description" content="Um serviço de email temporário que expira automaticamente." />
-    <meta name="author" content="Gabriel Ferreira" />
-
-    <meta property="og:title" content="TeuPai - Email Temporário" />
-    <meta property="og:description" content="Um serviço de email temporário que expira automaticamente." />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1" />
+    <meta name="theme-color" content="#7c3aed" />
+    <meta name="description" content="TeuPaiaquele ausente: Email temporário gratuito para brasileiros. Proteja sua privacidade online." />
+    <meta name="keywords" content="email temporário, privacidade, email descartável, proteção de dados, Brasil, teu pai" />
+    <meta name="author" content="TeuPaiaquele ausente" />
+    
+    <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
-    <meta property="og:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
-    <meta property="og:url" content="https://teupai.com.br" />
+    <meta property="og:url" content="https://teupaiaqueleausente.com.br/" />
+    <meta property="og:title" content="TeuPaiaquele ausente - Email Temporário" />
+    <meta property="og:description" content="Crie emails temporários gratuitos em segundos para proteger sua privacidade online" />
+    <meta property="og:image" content="/og-image.jpg" />
 
+    <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content="@DevFerreiraG" />
-    <meta name="twitter:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
-    <meta name="twitter:description" content="Um serviço de email temporário que expira automaticamente." />
-  </head>
+    <meta name="twitter:url" content="https://teupaiaqueleausente.com.br/" />
+    <meta name="twitter:title" content="TeuPaiaquele ausente - Email Temporário" />
+    <meta name="twitter:description" content="Crie emails temporários gratuitos em segundos para proteger sua privacidade online" />
+    <meta name="twitter:image" content="/og-image.jpg" />
 
+    <!-- PWA Support -->
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    
+    <!-- Preload fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    
+    <!-- DNS prefetch for analytics and Supabase -->
+    <link rel="dns-prefetch" href="https://xjnkevojcbmlrdytsnth.supabase.co" />
+    
+    <title>TeuPaiaquele ausente - Email Temporário</title>
+    
+    <!-- Inline critical CSS to improve First Contentful Paint -->
+    <style>
+      .critical-loading {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #f8fafc;
+      }
+      .dark .critical-loading {
+        background-color: #1e293b;
+      }
+      .pulse {
+        width: 3rem;
+        height: 3rem;
+        border-radius: 50%;
+        background-color: rgba(124, 58, 237, 0.2);
+        animation: pulse 1.5s ease-in-out infinite;
+      }
+      @keyframes pulse {
+        0% { transform: scale(0.8); opacity: 0.5; }
+        50% { transform: scale(1); opacity: 1; }
+        100% { transform: scale(0.8); opacity: 0.5; }
+      }
+    </style>
+  </head>
   <body>
-    <div id="root"></div>
-    <!-- IMPORTANT: DO NOT REMOVE THIS SCRIPT TAG OR THIS VERY COMMENT! -->
-    <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
+    <div id="root">
+      <div class="critical-loading">
+        <div class="pulse"></div>
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
+    <noscript>
+      <div style="padding: 2rem; text-align: center; font-family: system-ui, sans-serif;">
+        <h1>JavaScript é necessário</h1>
+        <p>Por favor, habilite JavaScript para usar o TeuPaiaquele ausente</p>
+      </div>
+    </noscript>
   </body>
 </html>

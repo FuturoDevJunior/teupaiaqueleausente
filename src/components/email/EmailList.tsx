@@ -1,22 +1,22 @@
+import { useMemo } from 'react';
+
+import { format } from 'date-fns';
 import {
-  AnimatePresence,
-  motion,
-} from 'framer-motion';
-import {
-  Info,
   Mail,
+  RefreshCw,
+  Trash2,
 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+} from '@/components/ui/card';
+import { Separator } from '@/components/ui/separator';
 import { Email } from '@/lib/email-service';
-
-import EmailBox from './EmailBox';
+import { cn } from '@/lib/utils';
 
 interface EmailListProps {
   messages: Email[];
@@ -26,147 +26,101 @@ interface EmailListProps {
   onReadEmail: (id: string) => void;
 }
 
-const EmailList = ({ 
-  messages, 
-  checkingEmail, 
-  onCheckEmails, 
-  onDeleteEmail, 
-  onReadEmail 
-}: EmailListProps) => {
+export default function EmailList({
+  messages,
+  checkingEmail,
+  onCheckEmails,
+  onDeleteEmail,
+  onReadEmail,
+}: EmailListProps) {
+  const sortedEmails = useMemo(() => {
+    return [...messages].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  }, [messages]);
+
   return (
-    <>
-      <div className="flex justify-between items-center mb-4 relative z-10">
-        <div className="flex items-center">
-          <h3 className="font-semibold">Caixa de entrada</h3>
-          <div className="ml-2 flex items-center text-xs text-muted-foreground">
-            <Mail className="h-3 w-3 mr-1" />
-            <span>{messages.length} mensagens</span>
-          </div>
-          
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <div className="ml-1 cursor-help">
-                  <Info className="h-3 w-3 text-muted-foreground/70" />
-                </div>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p className="text-xs max-w-52">
-                  Limite de 10 atualizações por minuto para evitar sobrecarga.
-                </p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+    <Card className="flex flex-col h-full">
+      <CardHeader className="pb-2">
+        <div className="flex items-center justify-between">
+          <h3 className="text-lg font-semibold">Caixa de Entrada</h3>
+          <Button variant="ghost" size="icon" onClick={onCheckEmails} disabled={checkingEmail}>
+            <RefreshCw className={cn('h-4 w-4', checkingEmail && 'animate-spin')} />
+          </Button>
         </div>
-        <Button
-          variant="outline"
-          size="sm"
-          className="group hover:bg-indigo-50 hover:border-indigo-200 dark:hover:bg-indigo-900/20 dark:hover:border-indigo-700 shadow-sm transition-all duration-300"
-          onClick={onCheckEmails}
-          disabled={checkingEmail}
-        >
-          <svg 
-            className={`h-4 w-4 mr-1 ${checkingEmail ? "animate-spin text-primary" : ""} group-hover:scale-110 transition-transform`}
-            xmlns="http://www.w3.org/2000/svg" 
-            width="24" 
-            height="24" 
-            viewBox="0 0 24 24" 
-            fill="none" 
-            stroke="currentColor" 
-            strokeWidth="2" 
-            strokeLinecap="round" 
-            strokeLinejoin="round"
-          >
-            <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8" />
-            <path d="M21 3v5h-5" />
-          </svg>
-          {checkingEmail ? "Atualizando..." : "Atualizar"}
-        </Button>
-      </div>
-
-      <div className="bg-card rounded-lg border border-border/70 min-h-[300px] overflow-hidden shadow-sm relative z-10">
-        <AnimatePresence initial={false}>
-          {messages.length === 0 ? (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="h-[300px] flex flex-col items-center justify-center text-center p-8"
-            >
-              <div className="relative">
-                <motion.div
-                  animate={{ 
-                    rotate: [0, 10, -10, 0],
-                    y: [0, -5, 0]
-                  }}
-                  transition={{ 
-                    repeat: Infinity, 
-                    duration: 5,
-                    repeatType: "mirror"
+      </CardHeader>
+      <Separator />
+      <CardContent className="flex-grow p-0">
+        {checkingEmail ? (
+          <div className="flex items-center justify-center h-full">
+            <RefreshCw className="w-6 h-6 animate-spin text-muted-foreground" />
+          </div>
+        ) : sortedEmails.length === 0 ? (
+          <div className="flex flex-col items-center justify-center h-full text-center p-4">
+            <Mail className="w-12 h-12 mb-4 text-muted-foreground opacity-20" />
+            <h3 className="text-lg font-medium">Nenhum email recebido</h3>
+            <p className="text-sm text-muted-foreground mt-1">
+              Os emails recebidos aparecerão aqui automaticamente.
+            </p>
+          </div>
+        ) : (
+          <div className="mt-4 max-h-[350px] overflow-y-auto pr-2">
+            {sortedEmails.map((email) => (
+              <button
+                key={email.id}
+                className={cn(
+                  'w-full flex flex-col text-left p-3 hover:bg-muted/50 transition-colors relative group',
+                  !email.read && 'font-medium'
+                )}
+                onClick={() => {
+                  if (!email.read) {
+                    onReadEmail(email.id);
+                  }
+                }}
+              >
+                <div className="flex justify-between items-start gap-2">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center">
+                      {!email.read && (
+                        <span className="w-2 h-2 bg-primary rounded-full mr-2" />
+                      )}
+                      <p
+                        className={cn(
+                          'truncate text-sm',
+                          !email.read && 'font-semibold'
+                        )}
+                      >
+                        {email.from}
+                      </p>
+                    </div>
+                    <h4 className="truncate font-medium text-sm mt-1">{email.subject}</h4>
+                    <p className="text-xs text-muted-foreground mt-1 truncate">
+                      {email.preview}
+                    </p>
+                  </div>
+                  <div className="text-xs text-muted-foreground whitespace-nowrap">
+                    {format(new Date(email.date), 'dd/MM/yyyy')}
+                  </div>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="absolute right-2 top-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onDeleteEmail(email.id);
                   }}
                 >
-                  <Mail className="h-12 w-12 text-muted-foreground/30 mb-3" />
-                </motion.div>
-              </div>
-              <h3 className="font-medium text-muted-foreground mb-1">Caixa de entrada vazia</h3>
-              <p className="text-sm text-muted-foreground/70 max-w-sm">
-                Os emails recebidos aparecerão aqui. Use o botão "Atualizar" para verificar por novas mensagens.
-              </p>
-            </motion.div>
-          ) : (
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              className="p-4 space-y-4 max-h-[400px] overflow-y-auto"
-            >
-              {checkingEmail && (
-                <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  className="bg-muted/40 rounded-md p-2 mb-2 text-center text-sm text-muted-foreground"
-                >
-                  <svg 
-                    className="h-3 w-3 animate-spin inline-block mr-1"
-                    xmlns="http://www.w3.org/2000/svg" 
-                    viewBox="0 0 24 24" 
-                    fill="none" 
-                    stroke="currentColor" 
-                    strokeWidth="2" 
-                    strokeLinecap="round" 
-                    strokeLinejoin="round"
-                  >
-                    <path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8" />
-                    <path d="M21 3v5h-5" />
-                  </svg>
-                  <span>Verificando novos emails...</span>
-                </motion.div>
-              )}
-              
-              <AnimatePresence initial={false}>
-                {messages.map((message) => (
-                  <motion.div
-                    key={message.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, height: 0, marginTop: 0 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    <EmailBox 
-                      email={message} 
-                      onDelete={() => onDeleteEmail(message.id)}
-                      onRead={() => onReadEmail(message.id)}
-                    />
-                  </motion.div>
-                ))}
-              </AnimatePresence>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
-    </>
+                  <span className="sr-only">Excluir email</span>
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </button>
+            ))}
+          </div>
+        )}
+      </CardContent>
+      <Separator />
+      <CardFooter className="p-2 text-xs text-muted-foreground">
+        {messages.length} email{messages.length !== 1 ? 's' : ''} recebido{messages.length !== 1 ? 's' : ''}
+      </CardFooter>
+    </Card>
   );
-};
-
-export default EmailList;
+}

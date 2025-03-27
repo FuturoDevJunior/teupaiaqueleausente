@@ -15,4 +15,7 @@ export interface EmailBoxProps {
   onNewEmail: () => void;
   onDeleteEmail: (id: string) => void;
   onReadEmail: (id: string) => void;
-} 
+}
+
+// Alias para manter compatibilidade com o novo componente EmailContainer
+export type EmailContainerProps = EmailBoxProps; 
